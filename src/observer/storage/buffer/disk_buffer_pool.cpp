@@ -875,6 +875,7 @@ RC BufferPoolManager::close_file(const char *_file_name)
 
   auto iter = buffer_pools_.find(file_name);
   if (iter == buffer_pools_.end()) {
+    // 出现报错，文件之前已经关闭了
     LOG_TRACE("file has not opened: %s", _file_name);
     lock_.unlock();
     return RC::INTERNAL;
