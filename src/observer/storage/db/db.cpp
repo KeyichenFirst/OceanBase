@@ -138,7 +138,7 @@ RC Db::init(const char *name, const char *dbpath, const char *trx_kit_name, cons
 
 RC Db::create_table(const char *table_name, span<const AttrInfoSqlNode> attributes, const StorageFormat storage_format)
 {
-  RC rc = RC::SUCCESS;
+  // RC rc = RC::SUCCESS;
   // check table_name
   if (opened_tables_.count(table_name) != 0) {
     LOG_WARN("%s has been opened before.", table_name);
