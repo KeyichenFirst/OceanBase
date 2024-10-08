@@ -180,7 +180,7 @@ RC Db::drop_table(const char *table_name)
   table->drop(table_file_path.c_str());
 
   delete table;
-  opended_tables_.erase(table_name);
+  opened_tables_.erase(table_name);
 
   return RC::SUCCESS;
 }
