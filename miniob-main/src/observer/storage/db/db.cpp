@@ -397,6 +397,22 @@ RC Db::init_dblwr_buffer()
   return RC::SUCCESS;
 }
 
+RC Db::drop_table(const char* table_name)
+{
+    auto it = opened_tables_.find(table_name);
+    if (it == opened_tables_.end())
+    {
+        return SCHEMA_TABLE_NOT_EXIST; // 找不到表，要返回错误，测试程序中也会校验这种场景
+    }
+    Table* table = it->second;
+    RC rc = table->destroy(path_.c_str()); // 让表自己销毁资源
+    if(rc != RC::SUCCESS) return rc;
+
+    opened_tables_.erase(it); // 删除成功的话，从表list中将它删除
+    delete table;
+    return RC::SUCCESS;
+}
+
 LogHandler        &Db::log_handler() { return *log_handler_; }
 BufferPoolManager &Db::buffer_pool_manager() { return *buffer_pool_manager_; }
 TrxKit            &Db::trx_kit() { return *trx_kit_; }
