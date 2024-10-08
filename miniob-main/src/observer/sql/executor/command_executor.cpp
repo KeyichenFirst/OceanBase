@@ -17,6 +17,7 @@ See the Mulan PSL v2 for more details. */
 #include "event/sql_event.h"
 #include "sql/executor/create_index_executor.h"
 #include "sql/executor/create_table_executor.h"
+#include "sql/executor/drop_table_executor.h"
 #include "sql/executor/desc_table_executor.h"
 #include "sql/executor/help_executor.h"
 #include "sql/executor/load_data_executor.h"
@@ -37,10 +38,9 @@ RC CommandExecutor::execute(SQLStageEvent *sql_event)
       rc = executor.execute(sql_event);
     } break;
     
-    case SCF_DROP_TABLE: {
-      const DropTable& drop_table = sql->sstr[sql->q_size-1].drop_table; // 拿到要drop 的表
-      rc = handler_->drop_table(current_db,drop_table.relation_name); // 调用drop table接口，drop table要在handler中实现
-      snprintf(response,sizeof(response),"%s\n", rc == RC::SUCCESS ? "SUCCESS" : "FAILURE"); // 返回结果，带不带换行符都可以
+    case StmtType::DROP_TABLE: {
+      DropTableExecutor executor;
+      rc = executor.execute(sql_event);
     } break;
 
     case StmtType::CREATE_TABLE: {
