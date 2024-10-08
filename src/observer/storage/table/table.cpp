@@ -132,8 +132,8 @@ RC Table::drop(const char *path)
   if(::remove(path) < 0){
     return RC::INTERNAL;
   }
-  string             data_file = table_data_file(base_dir_.c_str(), table_meta.name());
-  BufferPoolManager &bpm       = db->buffer_pool_manager();
+  string      data_file = table_data_file(base_dir_.c_str(), table_meta().name());
+  BufferPoolManager &bpm       = db()->buffer_pool_manager();
   bpm.remove_file(data_file.c_str());
 
   if(record_handler_ != nullptr){
