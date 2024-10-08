@@ -21,14 +21,14 @@ See the Mulan PSL v2 for more details. */
 #include "sql/stmt/drop_table_stmt.h"
 #include "storage/db/db.h"
 
-RC CreateTableExecutor::execute(SQLStageEvent *sql_event)
+RC DropTableExecutor::execute(SQLStageEvent *sql_event)
 {
   Stmt    *stmt    = sql_event->stmt();
   Session *session = sql_event->session_event()->session();
 
   DropTableStmt *drop_table_stmt = static_cast<DropTableStmt *>(stmt);
 
-  const char *table_name = create_table_stmt->table_name().c_str();
+  const char *table_name = drop_table_stmt->table_name().c_str();
   RC rc = session->get_current_db()->drop_table(table_name);
 
   return rc;
