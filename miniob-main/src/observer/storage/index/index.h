@@ -39,6 +39,7 @@ class Index
 public:
   Index()          = default;
   virtual ~Index() = default;
+  virtual void destroy() = 0;
 
   const IndexMeta &index_meta() const { return index_meta_; }
 

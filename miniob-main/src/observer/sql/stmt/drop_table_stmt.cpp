@@ -12,21 +12,16 @@ See the Mulan PSL v2 for more details. */
 // Created by Wangyunlai on 2023/6/13.
 //
 
-#pragma once
+#include "common/log/log.h"
+#include "common/types.h"
+#include "sql/stmt/drop_table_stmt.h"
+#include "event/sql_debug.h"
 
-#include "common/rc.h"
-
-class SQLStageEvent;
-
-/**
- * @brief 创建表的执行器
- * @ingroup Executor
- */
-class DropTableExecutor
+RC CreateTableStmt::drop(Db *db, const DropTableSqlNode &drop_table, Stmt *&stmt)
 {
-public:
-  DropTableExecutor()          = default;
-  virtual ~DropTableExecutor() = default;
+  
+  stmt = new DropTableStmt(drop_table.relation_name);
 
-  RC execute(SQLStageEvent *sql_event);
-};
+  return RC::SUCCESS;
+}
+

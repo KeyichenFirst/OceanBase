@@ -37,16 +37,17 @@ RC CommandExecutor::execute(SQLStageEvent *sql_event)
       CreateIndexExecutor executor;
       rc = executor.execute(sql_event);
     } break;
-    
-    case StmtType::DROP_TABLE: {
-      DropTableExecutor executor;
-      rc = executor.execute(sql_event);
-    } break;
 
     case StmtType::CREATE_TABLE: {
       CreateTableExecutor executor;
       rc = executor.execute(sql_event);
     } break;
+
+    case StmtType::DROP_TABLE: {
+      DropTableExecutor executor;
+      rc = executor.execute(sql_event);
+    } break;
+
 
     case StmtType::DESC_TABLE: {
       DescTableExecutor executor;
