@@ -982,7 +982,7 @@ void BplusTreeHandler::destroy()
   }
 
   disk_buffer_pool_ = nullptr;
-  // return RC::SUCCESS;
+
 }
 
 RC BplusTreeHandler::print_leaf(Frame *frame)
