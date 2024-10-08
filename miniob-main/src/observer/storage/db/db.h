@@ -69,7 +69,7 @@ public:
   /**
    * @brief 根据表名删除
    */
-  RC *drop_table(const char *table_name);
+  RC drop_table(const char *table_name);
 
   /**
    * @brief 根据表名查找表
