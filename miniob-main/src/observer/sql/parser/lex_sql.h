@@ -225,9 +225,6 @@ void yyrestart (FILE *input_file ,yyscan_t yyscanner );
 void yy_switch_to_buffer (YY_BUFFER_STATE new_buffer ,yyscan_t yyscanner );
 YY_BUFFER_STATE yy_create_buffer (FILE *file,int size ,yyscan_t yyscanner );
 void yy_delete_buffer (YY_BUFFER_STATE b ,yyscan_t yyscanner );
-
-void yy_drop_buffer (YY_BUFFER_STATE b ,yyscan_t yyscanner );
-
 void yy_flush_buffer (YY_BUFFER_STATE b ,yyscan_t yyscanner );
 void yypush_buffer_state (YY_BUFFER_STATE new_buffer ,yyscan_t yyscanner );
 void yypop_buffer_state (yyscan_t yyscanner );

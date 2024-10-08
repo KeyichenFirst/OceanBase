@@ -1820,32 +1820,6 @@ static void yy_load_buffer_state  (yyscan_t yyscanner)
 	yyfree((void *) b ,yyscanner );
 }
 
-/** 
- * Destroy the buffer created with yy_create_buffer ()
- * @param b a buffer created with yy_create_buffer ()
- * @param yyscanner The scanner object.
- */
-void yy_drop_buffer(YY_BUFFER_STATE b, yyscan_t yyscanner)
-{
-    struct yyguts_t *yyg = (struct yyguts_t*)yyscanner;
-
-    if (!b)
-        return;
-
-    // 如果当前缓冲区是我们要删除的缓冲区，则将其设置为空
-    if (b == YY_CURRENT_BUFFER)
-        YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) 0;
-
-    // 如果这个缓冲区是由 Flex 创建的，释放它的缓冲区内容
-    if (b->yy_is_our_buffer)
-        yyfree((void *)b->yy_ch_buf, yyscanner);
-
-    // 释放缓冲区结构本身
-    yyfree((void *)b, yyscanner);
-}
-
-
-
 #ifndef __cplusplus
 extern int isatty (int );
 #endif /* __cplusplus */

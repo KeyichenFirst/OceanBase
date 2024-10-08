@@ -29,9 +29,6 @@ See the Mulan PSL v2 for more details. */
 #include "storage/trx/trx.h"
 #include "storage/clog/disk_log_handler.h"
 #include "storage/clog/integrated_log_replayer.h"
-#include "persist.h"
-
-
 
 using namespace common;
 
@@ -163,46 +160,6 @@ RC Db::create_table(const char *table_name, span<const AttrInfoSqlNode> attribut
   LOG_INFO("Create table success. table name=%s, table_id:%d", table_name, table_id);
   return RC::SUCCESS;
 }
-
-RC Db::drop_table(const char *table_name)
-{
-    // 检查表是否存在
-    if (opened_tables_.count(table_name) == 0) {
-        LOG_WARN("Table %s does not exist.", table_name);
-        return RC::SCHEMA_TABLE_NOT_EXIST;
-    }
-
-    // 获取要删除的表对象
-    Table *table = opened_tables_[table_name];
-    
-    // 获取表的文件路径（表元数据通常包含文件路径）
-    string table_file_path = table_meta_file(path_.c_str(), table_name);
-
-    // 1. 删除表的数据文件
-    PersistHandler persist_handler;
-    RC rc = persist_handler.remove_file(table_file_path.c_str());
-    if (rc != RC::SUCCESS) {
-        LOG_ERROR("Failed to remove table file for table %s.", table_name);
-        return rc;
-    }
-
-    // 2. 删除表的元数据
-    rc = table->drop(this);
-    if (rc != RC::SUCCESS) {
-        LOG_ERROR("Failed to remove metadata for table %s.", table_name);
-        return rc;
-    }
-
-    // 3. 从 opened_tables_ 中删除记录
-    opened_tables_.erase(table_name);
-
-    // 释放表对象
-    delete table;
-
-    LOG_INFO("Table %s dropped successfully.", table_name);
-    return RC::SUCCESS;
-}
-
 
 Table *Db::find_table(const char *table_name) const
 {
