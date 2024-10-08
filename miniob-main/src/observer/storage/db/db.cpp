@@ -29,6 +29,9 @@ See the Mulan PSL v2 for more details. */
 #include "storage/trx/trx.h"
 #include "storage/clog/disk_log_handler.h"
 #include "storage/clog/integrated_log_replayer.h"
+#include "persist.h"
+
+
 
 using namespace common;
 
@@ -176,7 +179,8 @@ RC Db::drop_table(const char *table_name)
     string table_file_path = table_meta_file(path_.c_str(), table_name);
 
     // 1. 删除表的数据文件
-    RC rc = StorageManager::remove_table_file(table_file_path.c_str());
+    PersistHandler persist_handler;
+    RC rc = persist_handler.remove_file(table_file_path.c_str());
     if (rc != RC::SUCCESS) {
         LOG_ERROR("Failed to remove table file for table %s.", table_name);
         return rc;

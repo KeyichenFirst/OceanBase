@@ -3,6 +3,7 @@
 #include "sql/stmt/drop_table_stmt.h"
 #include "event/sql_debug.h"
 #include "storage/table/table.h"
+#include "storage/db/db.h"
 
 RC DropTableStmt::drop(Db *db, const DropTableSqlNode &drop_table, Stmt *&stmt)
 {
@@ -16,11 +17,11 @@ RC DropTableStmt::drop(Db *db, const DropTableSqlNode &drop_table, Stmt *&stmt)
     }
 
     // 检查表是否存在
-    // Table *table = db->find_table(table_name);
-    // if (nullptr == table) {
-    //     LOG_WARN("no such table. db=%s, table_name=%s", db->name(), table_name);
-    //     return RC::SCHEMA_TABLE_NOT_EXIST;  // 修正：添加分号
-    // }
+    Table *table = db->find_table(table_name);
+    if (nullptr == table) {
+        LOG_WARN("no such table. db=%s, table_name=%s", db->name(), table_name);
+        return RC::SCHEMA_TABLE_NOT_EXIST;  // 修正：添加分号
+    }
 
     // 检查该表是否有依赖关系
     // RC rc = db->check_dependencies(table_name);
@@ -30,7 +31,7 @@ RC DropTableStmt::drop(Db *db, const DropTableSqlNode &drop_table, Stmt *&stmt)
     // }
 
     // 如果没有依赖，创建 DropTableStmt 对象，存储表名
-    // stmt = new DropTableStmt(drop_table.relation_name);
+    stmt = new DropTableStmt(drop_table.relation_name);
 
     // 输出调试信息
     sql_debug("drop table statement: table name %s", drop_table.relation_name.c_str());
