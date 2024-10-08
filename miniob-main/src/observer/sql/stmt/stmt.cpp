@@ -59,6 +59,10 @@ RC Stmt::create_stmt(Db *db, ParsedSqlNode &sql_node, Stmt *&stmt)
     case SCF_SELECT: {
       return SelectStmt::create(db, sql_node.selection, stmt);
     }
+    case SCF_DROP_TABLE: {
+      return DropTableStmt::drop(db,sql_node.drop_table, stmt);
+    }
+
 
     case SCF_EXPLAIN: {
       return ExplainStmt::create(db, sql_node.explain, stmt);
@@ -109,10 +113,7 @@ RC Stmt::create_stmt(Db *db, ParsedSqlNode &sql_node, Stmt *&stmt)
       return CalcStmt::create(sql_node.calc, stmt);
     }
 
-    case SCF_DROP_TABLE: {
-      return DropTableStmt::DROP(db,sql_node.drop_table, stmt);
-    }
-
+    
     default: {
       LOG_INFO("Command::type %d doesn't need to create statement.", sql_node.flag);
     } break;
