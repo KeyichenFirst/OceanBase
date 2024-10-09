@@ -71,6 +71,11 @@ public:
    */
   RC drop_table(const char *table_name);
 
+   /**
+   * @brief 表中插入数据
+   */
+  // RC insert(const char *table_name);
+
   /**
    * @brief 根据表名查找表
    */

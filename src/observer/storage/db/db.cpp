@@ -185,7 +185,6 @@ RC Db::drop_table(const char *table_name)
   return RC::SUCCESS;
 }
 
-
 Table *Db::find_table(const char *table_name) const
 {
   unordered_map<string, Table *>::const_iterator iter = opened_tables_.find(table_name);
