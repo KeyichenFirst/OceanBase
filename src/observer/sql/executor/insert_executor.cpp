@@ -23,12 +23,12 @@ See the Mulan PSL v2 for more details. */
 
 RC InsertExecutor::execute(SQLStageEvent *sql_event)
 {
-  Stmt    *stmt    = sql_event->stmt();
-//   Session *session = sql_event->session_event()->session();
+    Stmt    *stmt    = sql_event->stmt();
+   //   Session *session = sql_event->session_event()->session();
 
-  InsertStmt *insert_stmt = static_cast<InsertStmt *>(stmt);
+   InsertStmt *insert_stmt = static_cast<InsertStmt *>(stmt);
 
-  // 获取目标表
+   // 获取目标表
    Table *table = insert_stmt->table();
     if (nullptr == table) {
         LOG_ERROR("Cannot find target table for insert.");
@@ -36,7 +36,7 @@ RC InsertExecutor::execute(SQLStageEvent *sql_event)
     }
     
     // 获得插入的
-    const std::vector<Value> &values = insert_stmt->values();
+    const Value *values_array = insert_stmt->values();
     int value_amount = insert_stmt->value_amount();
     // 获取单条记录的大小
     int re_size = table->table_meta().record_size();
@@ -45,36 +45,32 @@ RC InsertExecutor::execute(SQLStageEvent *sql_event)
     char *record_data = new char[re_size];
     memset(record_data, 0, re_size);
 
-     // 将插入的数据填充到 record_data
-   int offset = 0;
+    // 将插入的数据填充到 record_data
+    int offset = 0;
     for (int i = 0; i < value_amount; i++) {
-        const Value &value = values[i];
-        int value_size = 0;
+    const Value &value = values[i];
+    int value_size = 0;
 
-        // 根据类型确定数据大小
-        switch (value.type) {
-            case INT:
-                value_size = sizeof(int);
-                break;
-            case FLOAT:
-                value_size = sizeof(float);
-                break;
-            case STRING:
-                value_size = strlen(static_cast<const char *>(value.data()));
-                break;
-            // 处理其他数据类型
-            default:
-                LOG_ERROR("Unsupported value type.");
-                delete[] record_data;
-                return RC::INVALID_ARGUMENT;
-        }
-
-        // 检查是否超出record_data大小
-        if (offset + value_size > re_size) {
-            LOG_ERROR("Value size exceeds the record size.");
+    // 使用 attr_type() 获取数据类型
+    switch (value.attr_type()) {
+        case AttrType::INT:
+            value_size = sizeof(int);
+            break;
+        case AttrType::FLOAT:
+            value_size = sizeof(float);
+            break;
+        case AttrType::CHARS:
+            value_size = value.length(); // 字符串长度
+            break;
+        case AttrType::BOOL:
+            value_size = sizeof(bool);
+            break;
+        // 可以根据其他类型进行扩展
+        default:
+            LOG_ERROR("Unsupported value type.");
             delete[] record_data;
-            return RC::RECORD_TOO_LARGE;
-        }
+            return RC::INVALID_ARGUMENT;
+    }
 
         // 将数据复制到record_data
         memcpy(record_data + offset, value.data(), value_size);
