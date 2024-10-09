@@ -21,7 +21,7 @@ See the Mulan PSL v2 for more details. */
 #include "sql/stmt/insert_stmt.h"
 #include "storage/db/db.h"
 
-RC InsertTableExecutor::execute(SQLStageEvent *sql_event)
+RC InsertExecutor::execute(SQLStageEvent *sql_event)
 {
   Stmt    *stmt    = sql_event->stmt();
   Session *session = sql_event->session_event()->session();
