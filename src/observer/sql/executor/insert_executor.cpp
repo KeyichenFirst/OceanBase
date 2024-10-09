@@ -24,7 +24,7 @@ See the Mulan PSL v2 for more details. */
 RC InsertExecutor::execute(SQLStageEvent *sql_event)
 {
   Stmt    *stmt    = sql_event->stmt();
-  Session *session = sql_event->session_event()->session();
+//   Session *session = sql_event->session_event()->session();
 
   InsertStmt *insert_stmt = static_cast<InsertStmt *>(stmt);
 
@@ -37,19 +37,50 @@ RC InsertExecutor::execute(SQLStageEvent *sql_event)
     
     // 获得插入的
     const std::vector<Value> &values = insert_stmt->values();
+    int value_amount = insert_stmt->value_amount();
     // 获取单条记录的大小
     int re_size = table->table_meta().record_size();
+
     // 构造一个 Record 对象
     char *record_data = new char[re_size];
-    memset(record_data, 0, table->table_meta().record_size());
+    memset(record_data, 0, re_size);
 
      // 将插入的数据填充到 record_data
-    int offset = 0;
-    for (const Value &value : values) {
-        // 假设 value.data() 返回的是一个指向值的指针，并且 size() 返回数据大小
-        memcpy(record_data + offset, value.data(), value.size());
-        offset += value.size();
+   int offset = 0;
+    for (int i = 0; i < value_amount; i++) {
+        const Value &value = values[i];
+        int value_size = 0;
+
+        // 根据类型确定数据大小
+        switch (value.type) {
+            case INT:
+                value_size = sizeof(int);
+                break;
+            case FLOAT:
+                value_size = sizeof(float);
+                break;
+            case STRING:
+                value_size = strlen(static_cast<const char *>(value.data()));
+                break;
+            // 处理其他数据类型
+            default:
+                LOG_ERROR("Unsupported value type.");
+                delete[] record_data;
+                return RC::INVALID_ARGUMENT;
+        }
+
+        // 检查是否超出record_data大小
+        if (offset + value_size > re_size) {
+            LOG_ERROR("Value size exceeds the record size.");
+            delete[] record_data;
+            return RC::RECORD_TOO_LARGE;
+        }
+
+        // 将数据复制到record_data
+        memcpy(record_data + offset, value.data(), value_size);
+        offset += value_size;
     }
+
      // 创建 Record 对象
     Record record;
     record.set_data(record_data);
