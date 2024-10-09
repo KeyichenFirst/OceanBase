@@ -48,22 +48,16 @@ RC InsertExecutor::execute(SQLStageEvent *sql_event)
     // 将插入的数据填充到 record_data
     int offset = 0;
     for (int i = 0; i < value_amount; i++) {
-    const Value &value = values[i];
+    const Value &value = values_array[i];
     int value_size = 0;
 
     // 使用 attr_type() 获取数据类型
     switch (value.attr_type()) {
-        case AttrType::INT:
+        case AttrType::INTS:
             value_size = sizeof(int);
             break;
-        case AttrType::FLOAT:
+        case AttrType::FLOATS:
             value_size = sizeof(float);
-            break;
-        case AttrType::CHARS:
-            value_size = value.length(); // 字符串长度
-            break;
-        case AttrType::BOOL:
-            value_size = sizeof(bool);
             break;
         // 可以根据其他类型进行扩展
         default:
