@@ -73,7 +73,7 @@ public:
   /**
    * @brief  查询表
    */
-  RC select_tables(const std::vector<Table *> *tables);
+  RC select_tables(const std::vector<Table*>& tables);
    /**
    * @brief 表中插入数据
    */

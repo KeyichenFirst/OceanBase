@@ -28,7 +28,7 @@ RC SelectTablesExecutor::execute(SQLStageEvent *sql_event)
 
   SelectStmt *select_tables_stmt = static_cast<SelectStmt *>(stmt);
 
-  const std::vector<Table *> *tables = select_tables_stmt->tables();
+  const std::vector<Table *> tables = select_tables_stmt->tables();
 
   RC rc = session->get_current_db()->select_tables(tables);
 

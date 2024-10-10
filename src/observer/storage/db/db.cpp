@@ -185,8 +185,9 @@ RC Db::drop_table(const char *table_name)
   return RC::SUCCESS;
 }
 
-RC Db::select_tables(const std::vector<Table *> *tables)
+RC Db::select_tables(const std::vector<Table*>& tables)
 {
+  // 遍历传入的表
   for (Table *table : tables) {
     // 检查表是否为空指针，避免空指针访问
     if (table == nullptr) {
@@ -196,6 +197,7 @@ RC Db::select_tables(const std::vector<Table *> *tables)
 
     // 获取表名，用于日志输出
     const char *table_name = table->name();
+    LOG_INFO("Processing table: %s", table_name);
 
     // 获取所有记录的 RID 列表
     std::vector<RID> rids;
@@ -214,12 +216,15 @@ RC Db::select_tables(const std::vector<Table *> *tables)
         return rc;
       }
 
-      // 在这里可以对获取到的 record 进行进一步处理
+      // 处理获取到的 record，执行查询操作或其他逻辑
+      // 这里可以对 record 进行进一步的处理，比如存储结果或应用过滤条件
+      LOG_INFO("Fetched record from table: %s with RID: %d", table_name, rid.page_num);
     }
   }
 
   return RC::SUCCESS;
 }
+
 
 
 Table *Db::find_table(const char *table_name) const
