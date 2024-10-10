@@ -50,7 +50,7 @@ RC CommandExecutor::execute(SQLStageEvent *sql_event)
       rc = executor.execute(sql_event);
     } break;
     // 3.select-tables
-    case StmtType::INSERT: {
+    case StmtType::SELECT: {
       SelectTablesExecutor executor;
       rc = executor.execute(sql_event);
     } break;
