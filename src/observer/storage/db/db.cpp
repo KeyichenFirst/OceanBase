@@ -195,27 +195,43 @@ RC Db::select_tables(const std::vector<Table*>& tables)
       return RC::SCHEMA_TABLE_NOT_EXIST;
     }
 
-    // 获取表名，用于日志输出
     const char *table_name = table->name();
     LOG_INFO("Processing table: %s", table_name);
 
-    // 获取所有记录的 RID 列表
-    int32_t id = table->table_id();
-    Record record;
-    rc = table->get_record(id, record);
+    // 创建记录扫描器
+    RecordFileScanner scanner;
+    RC rc = table->get_record_scanner(scanner, nullptr, ReadWriteMode::READ_ONLY);
     if (rc != RC::SUCCESS) {
-      LOG_WARN("Failed to fetch record from table: %s with RID: %d. Error code: %d", table_name, id.page_num, rc);
+      LOG_WARN("Failed to open record scanner for table: %s. Error code: %d", table_name, rc);
       return rc;
     }
 
-    // 处理获取到的 record，执行查询操作或其他逻辑
-    // 这里可以对 record 进行进一步的处理，比如存储结果或应用过滤条件
-    LOG_INFO("Fetched record from table: %s with RID: %d", table_name, id.page_num);
-    
+    // 遍历扫描器中的所有记录
+    Record record;
+    while ((rc = scanner.next(record)) == RC::SUCCESS) {
+      // 获取记录的 RID
+      const RID &rid = record.rid();
+
+      // 处理获取到的记录，例如输出 RID 和记录数据
+      LOG_INFO("Fetched record from table: %s with RID: PageNum: %d, SlotNum: %d", 
+               table_name, rid.page_num, rid.slot_num);
+
+      // 这里可以对 record 进行进一步的处理，比如存储结果或应用过滤条件
+    }
+
+    // 检查扫描是否结束
+    if (rc != RC::RECORD_EOF) {
+      LOG_WARN("Error occurred while scanning records from table: %s. Error code: %d", table_name, rc);
+      return rc;
+    }
+
+    // 关闭扫描器
+    scanner.close_scan();
   }
 
   return RC::SUCCESS;
 }
+
 
 
 
