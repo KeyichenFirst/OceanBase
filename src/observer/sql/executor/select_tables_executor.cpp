@@ -28,7 +28,7 @@ RC SelectTablesExecutor::execute(SQLStageEvent *sql_event)
 
   SelectStmt *select_tables_stmt = static_cast<SelectStmt *>(stmt);
 
-  const std::vector<Table *> &tables = select_tables_stmt->tables();
+  const std::vector<Table *> *tables = select_tables_stmt->tables();
    // 检查是否有多个表
   if (tables.size() < 2) {
     LOG_ERROR("SelectTablesExecutor requires at least two tables for a multi-table query");

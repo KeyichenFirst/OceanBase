@@ -185,7 +185,7 @@ RC Db::drop_table(const char *table_name)
   return RC::SUCCESS;
 }
 
-RC Db::select_tables(const std::vector<Table *> &tables)
+RC Db::select_tables(const std::vector<Table *> *tables)
 {
   for (Table *table : tables) {
     // 检查表是否为空指针，避免空指针访问
