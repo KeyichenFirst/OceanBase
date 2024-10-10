@@ -200,26 +200,18 @@ RC Db::select_tables(const std::vector<Table*>& tables)
     LOG_INFO("Processing table: %s", table_name);
 
     // 获取所有记录的 RID 列表
-    std::vector<RID> rids;
-    RC rc = table->table_id();
+    int32_t id = table->table_id();
+    Record record;
+    rc = table->get_record(id, record);
     if (rc != RC::SUCCESS) {
-      LOG_WARN("Failed to scan all RIDs from table: %s. Error code: %d", table_name, rc);
+      LOG_WARN("Failed to fetch record from table: %s with RID: %d. Error code: %d", table_name, id.page_num, rc);
       return rc;
     }
 
-    // 遍历所有 RID，获取对应的记录
-    for (const RID &rid : rids) {
-      Record record;
-      rc = table->get_record(rid, record);
-      if (rc != RC::SUCCESS) {
-        LOG_WARN("Failed to fetch record from table: %s with RID: %d. Error code: %d", table_name, rid.page_num, rc);
-        return rc;
-      }
-
-      // 处理获取到的 record，执行查询操作或其他逻辑
-      // 这里可以对 record 进行进一步的处理，比如存储结果或应用过滤条件
-      LOG_INFO("Fetched record from table: %s with RID: %d", table_name, rid.page_num);
-    }
+    // 处理获取到的 record，执行查询操作或其他逻辑
+    // 这里可以对 record 进行进一步的处理，比如存储结果或应用过滤条件
+    LOG_INFO("Fetched record from table: %s with RID: %d", table_name, id.page_num);
+    
   }
 
   return RC::SUCCESS;
