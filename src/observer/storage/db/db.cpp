@@ -201,7 +201,7 @@ RC Db::select_tables(const std::vector<Table*>& tables)
 
     // 获取所有记录的 RID 列表
     std::vector<RID> rids;
-    RC rc = table->scan_all_rids(rids);
+    RC rc = table->table_id();
     if (rc != RC::SUCCESS) {
       LOG_WARN("Failed to scan all RIDs from table: %s. Error code: %d", table_name, rc);
       return rc;
