@@ -361,19 +361,30 @@ type:
     | STRING_T { $$ = static_cast<int>(AttrType::CHARS); }
     | FLOAT_T  { $$ = static_cast<int>(AttrType::FLOATS); }
     ;
-insert_stmt:        /*insert   语句的语法解析树*/
-    INSERT INTO ID VALUES LBRACE value value_list RBRACE 
+    
+insert_stmt:        /*insert 语句的语法解析树*/
+    INSERT INTO ID VALUES LBRACE value_group RBRACE
     {
       $$ = new ParsedSqlNode(SCF_INSERT);
       $$->insertion.relation_name = $3;
-      if ($7 != nullptr) {
-        $$->insertion.values.swap(*$7);
-        delete $7;
-      }
-      $$->insertion.values.emplace_back(*$6);
-      std::reverse($$->insertion.values.begin(), $$->insertion.values.end());
-      delete $6;
+      $$->insertion.values.swap(*$5);
+      delete $5;
       free($3);
+    }
+    ;
+
+value_group:
+    value  // 处理单个值
+    {
+      $$ = new std::vector<Value>();
+      $$->emplace_back(*$1);
+      delete $1;
+    }
+    | value_group COMMA value  // 支持多组值的递归
+    {
+      $1->emplace_back(*$3);
+      $$ = $1;
+      delete $3;
     }
     ;
 
@@ -382,7 +393,8 @@ value_list:
     {
       $$ = nullptr;
     }
-    | COMMA value value_list  { 
+    | COMMA value value_list
+    { 
       if ($3 != nullptr) {
         $$ = $3;
       } else {
@@ -392,6 +404,7 @@ value_list:
       delete $2;
     }
     ;
+
 value:
     NUMBER {
       $$ = new Value((int)$1);
