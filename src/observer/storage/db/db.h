@@ -70,7 +70,10 @@ public:
    * @brief 删除一个表
    */
   RC drop_table(const char *table_name);
-
+  /**
+   * @brief  查询表
+   */
+  RC select_tables(const char *table_name);
    /**
    * @brief 表中插入数据
    */

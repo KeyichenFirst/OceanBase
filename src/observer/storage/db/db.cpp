@@ -185,6 +185,43 @@ RC Db::drop_table(const char *table_name)
   return RC::SUCCESS;
 }
 
+RC Db::select_tables(const std::vector<Table *> &tables)
+{
+  for (Table *table : tables) {
+    // 检查表是否为空指针，避免空指针访问
+    if (table == nullptr) {
+      LOG_ERROR("Table pointer is null. Cannot fetch records.");
+      return RC::SCHEMA_TABLE_NOT_EXIST;
+    }
+
+    // 获取表名，用于日志输出
+    const char *table_name = table->name();
+
+    // 获取所有记录的 RID 列表
+    std::vector<RID> rids;
+    RC rc = table->scan_all_rids(rids);
+    if (rc != RC::SUCCESS) {
+      LOG_WARN("Failed to scan all RIDs from table: %s. Error code: %d", table_name, rc);
+      return rc;
+    }
+
+    // 遍历所有 RID，获取对应的记录
+    for (const RID &rid : rids) {
+      Record record;
+      rc = table->get_record(rid, record);
+      if (rc != RC::SUCCESS) {
+        LOG_WARN("Failed to fetch record from table: %s with RID: %d. Error code: %d", table_name, rid.page_num, rc);
+        return rc;
+      }
+
+      // 在这里可以对获取到的 record 进行进一步处理
+    }
+  }
+
+  return RC::SUCCESS;
+}
+
+
 Table *Db::find_table(const char *table_name) const
 {
   unordered_map<string, Table *>::const_iterator iter = opened_tables_.find(table_name);
